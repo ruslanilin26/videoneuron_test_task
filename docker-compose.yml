@@ -1,0 +1,35 @@
+﻿version: '1.0'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  webapi:
+    image: docker.io/library/webapi
+    depends_on: 
+      - "database"
+    container_name: webapi-service
+    ports:
+      - "8088:80"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=database;Port=5432;Database=VideoneuronTest;
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - dev
+  
+  database:
+    image: postgres:latest
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=VideoneuronTest
+    ports:
+      - "5433:5432"
+    restart: always
+    networks: 
+      - dev
